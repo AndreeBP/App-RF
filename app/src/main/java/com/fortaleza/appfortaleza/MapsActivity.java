@@ -5,17 +5,16 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.ImageButton;
+import android.util.Log;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.fortaleza.appfortaleza.model.Marcador;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -36,14 +35,21 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback  {
+
+    private final String TAG = getClass().getSimpleName();
 
     private GoogleMap mMap;
     private DatabaseReference databaseReference;
 
-    private ArrayList<Marker>tmpRealTimemarker = new ArrayList<>();
-    private ArrayList<Marker> realTimeMarker = new ArrayList<>();
+    //private ArrayList<Marker>tmpRealTimemarker = new ArrayList<>();
+    //private ArrayList<Marker> realTimeMarker = new ArrayList<>();
+
+    private ArrayList<Marcador> data = new ArrayList<>();
+    private Map<String, Integer> mapaMarcadorData = new HashMap<>();
 
 
     // Objeto que instancia el BottomSheet
@@ -195,11 +201,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         databaseReference.child("locations").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (Marker marker:realTimeMarker){
+                // Se limpia el mapa por completo
+                googleMap.clear();
+                // Se limpia la lista que contiene la información de cada marcador
+                data.clear();
+                // Se limpia el mapa que relaciona los ids de los marcadores con la posición de la data en la lista
+                mapaMarcadorData.clear();
+
+                /*for (Marker marker:realTimeMarker){
                     marker.remove();
-                }
+                }*/
+                int posicion = 0;
                 for (DataSnapshot snapshot: dataSnapshot.getChildren()){
-                    Marcadores mk = snapshot.getValue(Marcadores.class);
+                    Marcador mk = snapshot.getValue(Marcador.class);
+
+                    // Insertar la data el marcador en Marcadores
+                    data.add(mk);
 
                     Double latitud = mk.getLatitud();
                     Double longitud = mk.getLongitud();
@@ -222,18 +239,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     MarkerOptions markerOptions = new MarkerOptions().icon(BitmapDescriptorFactory.fromBitmap(smallMarker)).title(razon_social);
                     markerOptions.position(new LatLng(latitud,longitud));
-                    tmpRealTimemarker.add(mMap.addMarker(markerOptions));
+                    //tmpRealTimemarker.add(mMap.addMarker(markerOptions));
+                    Marker marker = mMap.addMarker(markerOptions);
+
+                    Log.d(TAG, "Se inserta en el mapaMarcadorObjeto el id de marcador: " + marker.getId());
+                    Log.d(TAG, "Se asocia con la key del registro de Firebase" + snapshot.getKey());
+                    mapaMarcadorData.put(marker.getId(), posicion);
+                    posicion++;
 
                     //cambiamos el icono del marcador
-                    markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-                    LatLng coordinate = new LatLng(latitud,longitud);
+                    /*markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+                    LatLng coordinate = new LatLng(latitud,longitud);*/
                     //CameraUpdate location = CameraUpdateFactory.newLatLngZoom(coordinate, 150);
 
                     ////zoom al mapa}
                     //mMap.animateCamera(location);
                 }
-                realTimeMarker.clear();
-                realTimeMarker.addAll(tmpRealTimemarker);
+                /*realTimeMarker.clear();
+                realTimeMarker.addAll(tmpRealTimemarker);*/
             }
 
             @Override
@@ -245,14 +268,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public boolean onMarkerClick(Marker marker) {
                 // Aquí se debe identificar qué establecimiento ha sido seleccionado
-                /*Marcadores distribuidores = tmpRealTimemarker.get(realTimeMarker.add(marker.getId()));
-                txtRazonSocial.setText(distribuidores.getRazon_social());
-                txtNombres_Apellidos.setText(distribuidores.getNombre_apellidos());
-                txtTelefono.setText(distribuidores.getTelefono());
-                txtCelular.setText(distribuidores.getCelular());
-                txtCorreo.setText(distribuidores.getEmail());
-                txtRepresentante_Cargo.setText(distribuidores.getRepresentante_cargo());
-                txtRuc.setText(distribuidores.getRuc());*/
+                Marcador distribuidor = data.get(mapaMarcadorData.get(marker.getId()));
+                txtRazonSocial.setText(distribuidor.getRazon_social());
+                txtNombres_Apellidos.setText(distribuidor.getNombre_apellidos());
+                txtTelefono.setText(distribuidor.getTelefono());
+                txtCelular.setText(distribuidor.getCelular());
+                txtCorreo.setText(distribuidor.getEmail());
+                txtRepresentante_Cargo.setText(distribuidor.getRepresentante_cargo());
+                txtRuc.setText(distribuidor.getRuc());
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                 return false;
             }

@@ -1,6 +1,6 @@
-package com.fortaleza.appfortaleza;
+package com.fortaleza.appfortaleza.model;
 
-public class Marcadores {
+public class Marcador {
 
     private double latitud;
     private double longitud;
@@ -13,7 +13,7 @@ public class Marcadores {
     private String ruc;
 
 
-    public Marcadores(){
+    public Marcador(){
 
     }
 

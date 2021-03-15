@@ -1,10 +1,7 @@
 package com.fortaleza.appfortaleza;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.AlertDialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -14,11 +11,8 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.fortaleza.appfortaleza.model.Location;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
+import com.fortaleza.appfortaleza.model.Marcador;
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -27,11 +21,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import dmax.dialog.SpotsDialog;
-
 public class RegisterLugar_Activity extends AppCompatActivity implements View.OnClickListener{
 
-    private List<Marcadores> listaCoordenada = new ArrayList<  >();
+    private List<Marcador> listaCoordenada = new ArrayList<  >();
     ArrayAdapter<Location> arrayAdapterCoordenadas;
 
     EditText latitud_input,longitud_input,rasocial_input,nomyape_input,email_input,phone_input,manager_input,ruc_input;

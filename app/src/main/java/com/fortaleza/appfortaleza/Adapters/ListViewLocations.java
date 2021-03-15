@@ -4,14 +4,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
-import com.fortaleza.appfortaleza.Marcadores;
+import com.fortaleza.appfortaleza.model.Marcador;
 import com.fortaleza.appfortaleza.R;
-import com.fortaleza.appfortaleza.model.Location;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -24,8 +22,8 @@ import java.util.List;
 
 public class ListViewLocations extends AppCompatActivity {
 
-    private List<Marcadores> listaCoordenada = new ArrayList<  >();
-    ArrayAdapter<Marcadores> arrayAdapterCoordenadas;
+    private List<Marcador> listaCoordenada = new ArrayList<  >();
+    ArrayAdapter<Marcador> arrayAdapterCoordenadas;
 
     EditText latitud_input,longitud_input,rasocial_input,nomyape_input,email_input,phone_input,manager_input,ruc_input;
     ListView listaView_coordenada;
@@ -77,9 +75,9 @@ public class ListViewLocations extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 listaCoordenada.clear();
                 for (DataSnapshot objSnapshot : dataSnapshot.getChildren()){
-                    Marcadores u = objSnapshot.getValue(Marcadores.class);
+                    Marcador u = objSnapshot.getValue(Marcador.class);
                     listaCoordenada.add(u);
-                    arrayAdapterCoordenadas=new ArrayAdapter<Marcadores>(ListViewLocations.this,
+                    arrayAdapterCoordenadas=new ArrayAdapter<Marcador>(ListViewLocations.this,
                             android.R.layout.simple_list_item_1,listaCoordenada);
                     listaView_coordenada.setAdapter(arrayAdapterCoordenadas);
                 }
